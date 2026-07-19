@@ -1,0 +1,91 @@
+[
+  {
+    "name": "Mutual Non-Disclosure Agreement (MNDA)",
+    "description": "A mutual non-disclosure agreement that allows two parties to disclose confidential information to each other in connection with evaluating a potential business relationship.",
+    "source": "https://github.com/CommonPaper/Mutual-NDA",
+    "filenames": [
+      "templates/Mutual-NDA.md",
+      "templates/Mutual-NDA-coverpage.md"
+    ]
+  },
+  {
+    "name": "Cloud Service Agreement (CSA)",
+    "description": "A standard agreement for selling and buying cloud software and SaaS products, covering access and use of the service, payment, term, warranties, liability, indemnification, and confidentiality.",
+    "source": "https://github.com/CommonPaper/CSA",
+    "filenames": [
+      "templates/CSA.md"
+    ]
+  },
+  {
+    "name": "Design Partner Agreement",
+    "description": "An agreement granting an early customer or partner access to a product in exchange for feedback to help develop and improve the product before general availability.",
+    "source": "https://github.com/CommonPaper/Design-Partner-Agreement",
+    "filenames": [
+      "templates/design-partner-agreement.md"
+    ]
+  },
+  {
+    "name": "Service Level Agreement (SLA)",
+    "description": "A supplemental agreement, designed to be used with the Common Paper Cloud Service Agreement, that defines uptime and support response time commitments and the service credits available if those targets are missed.",
+    "source": "https://github.com/CommonPaper/SLA",
+    "filenames": [
+      "templates/sla.md"
+    ]
+  },
+  {
+    "name": "Professional Services Agreement (PSA)",
+    "description": "An agreement for procuring professional services under one or more statements of work, covering deliverables, intellectual property, payment, warranties, liability, and confidentiality.",
+    "source": "https://github.com/CommonPaper/PSA",
+    "filenames": [
+      "templates/psa.md"
+    ]
+  },
+  {
+    "name": "Data Processing Agreement (DPA)",
+    "description": "An agreement governing how a service provider processes personal data on behalf of a customer, including international data transfer mechanisms, subprocessors, security incident response, and audit rights.",
+    "source": "https://github.com/CommonPaper/DPA",
+    "filenames": [
+      "templates/DPA.md"
+    ]
+  },
+  {
+    "name": "Software License Agreement",
+    "description": "An agreement licensing on-premises or installed software to a customer, covering license grants, restrictions, updates, warranties, liability, and confidentiality.",
+    "source": "https://github.com/CommonPaper/Software-License-Agreement",
+    "filenames": [
+      "templates/Software-License-Agreement.md"
+    ]
+  },
+  {
+    "name": "Partnership Agreement",
+    "description": "An agreement for business partnerships involving mutual obligations, trademark licensing, and fees, covering brand element usage, payment, warranties, liability, and confidentiality.",
+    "source": "https://github.com/CommonPaper/Partnership-Agreement",
+    "filenames": [
+      "templates/Partnership-Agreement.md"
+    ]
+  },
+  {
+    "name": "Pilot Agreement",
+    "description": "A short-term trial or evaluation agreement that allows a prospective customer to test a product before committing to a longer-term deal.",
+    "source": "https://github.com/CommonPaper/Pilot-Agreement",
+    "filenames": [
+      "templates/Pilot-Agreement.md"
+    ]
+  },
+  {
+    "name": "Business Associate Agreement (BAA)",
+    "description": "A HIPAA-required agreement between a covered entity and a business associate that governs the use, disclosure, and safeguarding of protected health information (PHI).",
+    "source": "https://github.com/CommonPaper/BAA",
+    "filenames": [
+      "templates/BAA.md"
+    ]
+  },
+  {
+    "name": "AI Addendum",
+    "description": "A supplemental addendum governing the use of AI services within a product, covering permitted uses of inputs and outputs, model training restrictions, ownership, and AI-specific disclaimers.",
+    "source": "https://github.com/CommonPaper/AI-Addendum",
+    "filenames": [
+      "templates/AI-Addendum.md"
+    ]
+  }
+]
