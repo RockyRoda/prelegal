@@ -30,7 +30,12 @@ export async function POST(request: Request) {
   <body>${documentHtml}</body>
 </html>`;
 
-  const browser = await puppeteer.launch({ headless: true });
+  // Docker's default container runtime blocks the namespace syscalls
+  // Chromium's sandbox needs, so it must be disabled to launch at all.
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   try {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "load" });

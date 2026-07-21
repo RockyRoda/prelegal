@@ -30,6 +30,11 @@ htmlcov/
 .mypy_cache/
 .ruff_cache/
 
+# SQLite (recreated from scratch on every backend startup)
+*.db
+*.db-journal
+backend/data/
+
 # --- Node / Next.js ---
 node_modules/
 .next/
