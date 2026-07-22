@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import NDAForm from "@/components/NDAForm";
+import { useState } from "react";
+import NDAChatPanel from "@/components/NDAChatPanel";
 import NDADocument from "@/components/NDADocument";
 import { defaultNDAFormData } from "@/lib/nda/defaults";
 import { NDAFormData } from "@/lib/nda/types";
@@ -17,8 +17,7 @@ export default function NdaCreatorPage({ user, onSignOut }: NdaCreatorPageProps)
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function handleDownload() {
     setError(null);
     setIsGenerating(true);
 
@@ -58,7 +57,7 @@ export default function NdaCreatorPage({ user, onSignOut }: NdaCreatorPageProps)
               Mutual NDA Creator
             </h1>
             <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-              Fill in the details below to generate a Mutual Non-Disclosure Agreement based on the
+              Chat with the assistant to fill in a Mutual Non-Disclosure Agreement based on the
               Common Paper standard, and download it as a PDF.
             </p>
           </div>
@@ -75,16 +74,14 @@ export default function NdaCreatorPage({ user, onSignOut }: NdaCreatorPageProps)
         </div>
       </header>
 
-      <form
-        onSubmit={handleSubmit}
-        className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-6 py-8 lg:grid-cols-2"
-      >
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 px-6 py-8 lg:grid-cols-2">
         <div>
-          <NDAForm data={data} onChange={setData} />
+          <NDAChatPanel data={data} onChange={setData} />
 
           <div className="mt-6 flex items-center gap-4">
             <button
-              type="submit"
+              type="button"
+              onClick={handleDownload}
               disabled={isGenerating}
               className="rounded-md bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
             >
@@ -99,7 +96,7 @@ export default function NdaCreatorPage({ user, onSignOut }: NdaCreatorPageProps)
             <NDADocument data={data} />
           </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
