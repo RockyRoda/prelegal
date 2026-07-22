@@ -2,10 +2,13 @@
 
 import { useState, type FormEvent } from "react";
 import { signIn, signUp } from "@/lib/auth/api";
-import type { AuthUser } from "@/lib/auth/types";
+import type { AuthSession } from "@/lib/auth/types";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import Input from "@/components/ui/Input";
 
 interface LoginScreenProps {
-  onAuthenticated: (user: AuthUser) => void;
+  onAuthenticated: (session: AuthSession) => void;
 }
 
 type Mode = "signin" | "signup";
@@ -14,6 +17,7 @@ export default function LoginScreen({ onAuthenticated }: LoginScreenProps) {
   const [mode, setMode] = useState<Mode>("signin");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,8 +27,8 @@ export default function LoginScreen({ onAuthenticated }: LoginScreenProps) {
     setIsSubmitting(true);
 
     try {
-      const user = mode === "signup" ? await signUp(name, email) : await signIn(email);
-      onAuthenticated(user);
+      const session = mode === "signup" ? await signUp(name, email, password) : await signIn(email, password);
+      onAuthenticated(session);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
@@ -33,53 +37,65 @@ export default function LoginScreen({ onAuthenticated }: LoginScreenProps) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-6">
-      <div className="w-full max-w-sm rounded-lg border-t-4 border-[#ecad0a] bg-white p-8 shadow-sm">
-        <h1 className="text-xl font-semibold text-[#032147]">Prelegal</h1>
-        <p className="mt-1 text-sm text-[#888888]">
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-6 dark:bg-zinc-950">
+      <Card className="w-full max-w-sm border-t-4 border-brand-yellow p-8">
+        <h1 className="text-xl font-semibold text-brand-navy dark:text-zinc-50">Prelegal</h1>
+        <p className="mt-1 text-sm text-brand-gray">
           {mode === "signup" ? "Create an account to continue." : "Sign in to continue."}
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           {mode === "signup" && (
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-[#888888]">
+              <label htmlFor="name" className="block text-sm font-medium text-brand-gray">
                 Name
               </label>
-              <input
+              <Input
                 id="name"
                 type="text"
                 required
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-[#209dd7] focus:outline-none"
+                className="mt-1"
               />
             </div>
           )}
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-[#888888]">
+            <label htmlFor="email" className="block text-sm font-medium text-brand-gray">
               Email
             </label>
-            <input
+            <Input
               id="email"
               type="email"
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-[#209dd7] focus:outline-none"
+              className="mt-1"
             />
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-brand-gray">
+              Password
+            </label>
+            <Input
+              id="password"
+              type="password"
+              required
+              minLength={mode === "signup" ? 8 : undefined}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              className="mt-1"
+            />
+            {mode === "signup" && <p className="mt-1 text-xs text-brand-gray">At least 8 characters.</p>}
+          </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full rounded-md bg-[#753991] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#5f2e75] disabled:opacity-50"
-          >
+          {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+
+          <Button type="submit" disabled={isSubmitting} className="w-full">
             {isSubmitting ? "Please wait…" : mode === "signup" ? "Sign up" : "Sign in"}
-          </button>
+          </Button>
         </form>
 
         <button
@@ -88,11 +104,11 @@ export default function LoginScreen({ onAuthenticated }: LoginScreenProps) {
             setError(null);
             setMode(mode === "signup" ? "signin" : "signup");
           }}
-          className="mt-4 text-sm text-[#209dd7] hover:underline"
+          className="mt-4 text-sm text-brand-blue hover:underline"
         >
           {mode === "signup" ? "Already have an account? Sign in" : "Need an account? Sign up"}
         </button>
-      </div>
+      </Card>
     </div>
   );
 }

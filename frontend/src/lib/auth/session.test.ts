@@ -1,29 +1,29 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { clearSessionUser, loadSessionUser, saveSessionUser } from "./session";
+import { clearSession, loadSession, saveSession } from "./session";
 
 describe("session", () => {
   beforeEach(() => {
-    sessionStorage.clear();
+    localStorage.clear();
   });
 
   it("returns null when nothing is stored", () => {
-    expect(loadSessionUser()).toBeNull();
+    expect(loadSession()).toBeNull();
   });
 
-  it("round-trips a saved user", () => {
-    const user = { id: 1, name: "Ada Lovelace", email: "ada@example.com" };
-    saveSessionUser(user);
-    expect(loadSessionUser()).toEqual(user);
+  it("round-trips a saved session", () => {
+    const session = { user: { id: 1, name: "Ada Lovelace", email: "ada@example.com" }, token: "tok_123" };
+    saveSession(session);
+    expect(loadSession()).toEqual(session);
   });
 
   it("returns null instead of throwing on corrupt stored data", () => {
-    sessionStorage.setItem("prelegal.user", "not valid json");
-    expect(loadSessionUser()).toBeNull();
+    localStorage.setItem("prelegal.session", "not valid json");
+    expect(loadSession()).toBeNull();
   });
 
-  it("removes the stored user on clear", () => {
-    saveSessionUser({ id: 1, name: "Ada Lovelace", email: "ada@example.com" });
-    clearSessionUser();
-    expect(loadSessionUser()).toBeNull();
+  it("removes the stored session on clear", () => {
+    saveSession({ user: { id: 1, name: "Ada Lovelace", email: "ada@example.com" }, token: "tok_123" });
+    clearSession();
+    expect(loadSession()).toBeNull();
   });
 });

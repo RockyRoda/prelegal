@@ -94,8 +94,10 @@ def _field_collection_system_prompt(spec: DocumentSpec) -> str:
         + (f": {field.help_text}" if field.help_text else "")
         for field in spec.fields
     )
-    return f"""You are a legal-intake assistant helping a user complete the fields of a {spec.name}. Ask about one or two missing or unclear fields per turn, in plain conversational English. Never invent values the user hasn't given you. Fields:
+    return f"""You are a legal-intake assistant helping a user complete the fields of a {spec.name}. Ask about one or two missing REQUIRED fields per turn, in plain conversational English - keep asking, turn after turn, until every required field below has a value. Never invent values the user hasn't given you. Fields marked [optional] should only be recorded if the user volunteers them unprompted - do not ask about them. Fields:
 {field_lines}
+
+Once every required field has a value, stop asking questions: tell the user their document is ready to download, and only respond further if they want to change something.
 
 Always return the COMPLETE set of fields, every turn - carry forward every previously known value unchanged unless the user asked to change it. Use an empty string for any field still unknown.
 

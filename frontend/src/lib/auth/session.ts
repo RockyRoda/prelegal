@@ -1,21 +1,21 @@
-import type { AuthUser } from "./types";
+import type { AuthSession } from "./types";
 
-const SESSION_KEY = "prelegal.user";
+const SESSION_KEY = "prelegal.session";
 
-export function loadSessionUser(): AuthUser | null {
-  const raw = sessionStorage.getItem(SESSION_KEY);
+export function loadSession(): AuthSession | null {
+  const raw = localStorage.getItem(SESSION_KEY);
   if (!raw) return null;
   try {
-    return JSON.parse(raw) as AuthUser;
+    return JSON.parse(raw) as AuthSession;
   } catch {
     return null;
   }
 }
 
-export function saveSessionUser(user: AuthUser): void {
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify(user));
+export function saveSession(session: AuthSession): void {
+  localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 }
 
-export function clearSessionUser(): void {
-  sessionStorage.removeItem(SESSION_KEY);
+export function clearSession(): void {
+  localStorage.removeItem(SESSION_KEY);
 }

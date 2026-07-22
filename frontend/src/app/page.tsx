@@ -3,38 +3,38 @@
 import { useEffect, useState } from "react";
 import LoginScreen from "@/components/LoginScreen";
 import DocumentCreatorPage from "@/components/DocumentCreatorPage";
-import { clearSessionUser, loadSessionUser, saveSessionUser } from "@/lib/auth/session";
-import type { AuthUser } from "@/lib/auth/types";
+import { clearSession, loadSession, saveSession } from "@/lib/auth/session";
+import type { AuthSession } from "@/lib/auth/types";
 
 export default function Home() {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [session, setSession] = useState<AuthSession | null>(null);
   const [isSessionLoaded, setIsSessionLoaded] = useState(false);
 
   useEffect(() => {
-    // sessionStorage doesn't exist during SSR, so the session can only be read
+    // localStorage doesn't exist during SSR, so the session can only be read
     // once mounted on the client.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setUser(loadSessionUser());
+    setSession(loadSession());
     setIsSessionLoaded(true);
   }, []);
 
-  function handleAuthenticated(authUser: AuthUser) {
-    saveSessionUser(authUser);
-    setUser(authUser);
+  function handleAuthenticated(authSession: AuthSession) {
+    saveSession(authSession);
+    setSession(authSession);
   }
 
   function handleSignOut() {
-    clearSessionUser();
-    setUser(null);
+    clearSession();
+    setSession(null);
   }
 
   if (!isSessionLoaded) {
     return null;
   }
 
-  if (!user) {
+  if (!session) {
     return <LoginScreen onAuthenticated={handleAuthenticated} />;
   }
 
-  return <DocumentCreatorPage user={user} onSignOut={handleSignOut} />;
+  return <DocumentCreatorPage session={session} onSignOut={handleSignOut} />;
 }

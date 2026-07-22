@@ -6,46 +6,50 @@ describe("auth api", () => {
     vi.unstubAllGlobals();
   });
 
-  it("signUp posts name and email and returns the created user", async () => {
-    const user = { id: 1, name: "Ada Lovelace", email: "ada@example.com" };
+  it("signUp posts name, email, and password and returns the session", async () => {
+    const session = { user: { id: 1, name: "Ada Lovelace", email: "ada@example.com" }, token: "tok_123" };
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => user,
+      json: async () => session,
     });
     vi.stubGlobal("fetch", fetchMock);
 
-    const result = await signUp("Ada Lovelace", "ada@example.com");
+    const result = await signUp("Ada Lovelace", "ada@example.com", "hunter22");
 
-    expect(result).toEqual(user);
+    expect(result).toEqual(session);
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe("http://localhost:8000/api/auth/signup");
-    expect(JSON.parse(init.body)).toEqual({ name: "Ada Lovelace", email: "ada@example.com" });
+    expect(JSON.parse(init.body)).toEqual({
+      name: "Ada Lovelace",
+      email: "ada@example.com",
+      password: "hunter22",
+    });
   });
 
-  it("signIn posts only the email", async () => {
-    const user = { id: 1, name: "Ada Lovelace", email: "ada@example.com" };
+  it("signIn posts email and password", async () => {
+    const session = { user: { id: 1, name: "Ada Lovelace", email: "ada@example.com" }, token: "tok_123" };
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => user,
+      json: async () => session,
     });
     vi.stubGlobal("fetch", fetchMock);
 
-    await signIn("ada@example.com");
+    await signIn("ada@example.com", "hunter22");
 
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe("http://localhost:8000/api/auth/signin");
-    expect(JSON.parse(init.body)).toEqual({ email: "ada@example.com" });
+    expect(JSON.parse(init.body)).toEqual({ email: "ada@example.com", password: "hunter22" });
   });
 
   it("throws the backend's error detail on failure", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: false,
-      json: async () => ({ detail: "No account found for this email" }),
+      json: async () => ({ detail: "Invalid email or password" }),
     });
     vi.stubGlobal("fetch", fetchMock);
 
-    await expect(signIn("nobody@example.com")).rejects.toThrow(
-      "No account found for this email"
+    await expect(signIn("nobody@example.com", "wrong")).rejects.toThrow(
+      "Invalid email or password"
     );
   });
 
@@ -58,7 +62,7 @@ describe("auth api", () => {
     });
     vi.stubGlobal("fetch", fetchMock);
 
-    await expect(signIn("nobody@example.com")).rejects.toThrow(
+    await expect(signIn("nobody@example.com", "wrong")).rejects.toThrow(
       "Something went wrong. Please try again."
     );
   });

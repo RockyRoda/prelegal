@@ -1,29 +1,39 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { sendDocumentChatMessage } from "@/lib/documents/api";
 import type { ChatMessage } from "@/lib/documents/types";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
 
-const initialMessages: ChatMessage[] = [
-  {
-    role: "assistant",
-    content: "Hi! What kind of legal document do you need today?",
-  },
-];
+const DEFAULT_WELCOME = "Hi! What kind of legal document do you need today?";
 
 export default function DocumentChatPanel({
   docId,
+  documentId,
   fieldValues,
+  token,
+  welcomeMessage,
   onUpdate,
 }: {
   docId: string | null;
+  documentId: number | null;
   fieldValues: Record<string, string>;
-  onUpdate: (docId: string | null, fieldValues: Record<string, string>, html: string) => void;
+  token: string;
+  welcomeMessage?: string;
+  onUpdate: (docId: string | null, documentId: number | null, fieldValues: Record<string, string>, html: string) => void;
 }) {
-  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { role: "assistant", content: welcomeMessage ?? DEFAULT_WELCOME },
+  ]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -36,9 +46,9 @@ export default function DocumentChatPanel({
     setIsSending(true);
 
     try {
-      const result = await sendDocumentChatMessage(nextMessages, docId, fieldValues);
+      const result = await sendDocumentChatMessage(nextMessages, docId, documentId, fieldValues, token);
       setMessages([...nextMessages, { role: "assistant", content: result.reply }]);
-      onUpdate(result.docId, result.fieldValues, result.html);
+      onUpdate(result.docId, result.documentId, result.fieldValues, result.html);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
@@ -54,30 +64,26 @@ export default function DocumentChatPanel({
             key={index}
             className={
               message.role === "user"
-                ? "text-right text-[#032147] dark:text-zinc-100"
+                ? "text-right text-brand-navy dark:text-zinc-100"
                 : "text-zinc-700 dark:text-zinc-300"
             }
           >
             {message.content}
           </p>
         ))}
+        <div ref={messagesEndRef} />
       </div>
       <form onSubmit={handleSubmit} className="flex gap-2">
-        <input
+        <Input
           value={input}
           onChange={(event) => setInput(event.target.value)}
-          className="flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm focus:border-[#209dd7] focus:outline-none dark:border-zinc-700 dark:bg-zinc-900"
           placeholder="Type your answer…"
         />
-        <button
-          type="submit"
-          disabled={isSending}
-          className="rounded-md bg-[#753991] px-4 py-2 text-sm font-medium text-white hover:bg-[#5f2e75] disabled:opacity-50"
-        >
+        <Button type="submit" disabled={isSending}>
           {isSending ? "Sending…" : "Send"}
-        </button>
+        </Button>
       </form>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
     </div>
   );
 }
