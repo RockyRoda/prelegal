@@ -1,0 +1,102 @@
+.doc-document {
+  font-family: Georgia, "Times New Roman", serif;
+  color: #111111;
+  max-width: 8.5in;
+  margin: 0 auto;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.doc-title {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 1.5em;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.doc-section-heading {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 1.5em 0 0.75em;
+  border-bottom: 1px solid #cccccc;
+  padding-bottom: 0.25em;
+}
+
+.doc-document h1,
+.doc-document h2,
+.doc-document h3,
+.doc-document h4 {
+  margin: 1.25em 0 0.5em;
+}
+
+.doc-document ol,
+.doc-document ul {
+  padding-left: 1.4em;
+}
+
+.doc-document li {
+  margin-bottom: 0.5em;
+  text-align: justify;
+}
+
+.doc-document p {
+  margin: 0 0 1em;
+}
+
+table.doc-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5em;
+}
+
+table.doc-summary-table th,
+table.doc-summary-table td {
+  border: 1px solid #999999;
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: top;
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+
+table.doc-summary-table tr.doc-summary-group th {
+  background: #f5e6bf;
+  text-align: left;
+  font-size: 13px;
+}
+
+.doc-document table:not(.doc-summary-table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+.doc-document table:not(.doc-summary-table) th,
+.doc-document table:not(.doc-summary-table) td {
+  border: 1px solid #999999;
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: top;
+  font-size: 13px;
+}
+
+.doc-term {
+  text-decoration: underline;
+}
+
+.coverpage_link,
+.keyterms_link,
+.sow_link,
+.orderform_link,
+.businessterms_link {
+  font-weight: 600;
+}
+
+.doc-footer-note {
+  margin-top: 2em;
+  font-size: 11px;
+  color: #555555;
+  text-align: center;
+}

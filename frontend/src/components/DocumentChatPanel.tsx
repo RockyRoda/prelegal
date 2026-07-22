@@ -1,22 +1,24 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import type { NDAFormData } from "@/lib/nda/types";
-import { sendNDAChatMessage, type ChatMessage } from "@/lib/nda/chatApi";
+import { sendDocumentChatMessage } from "@/lib/documents/api";
+import type { ChatMessage } from "@/lib/documents/types";
 
 const initialMessages: ChatMessage[] = [
   {
     role: "assistant",
-    content: "Hi! Let's put together your Mutual NDA. What's the purpose of this agreement?",
+    content: "Hi! What kind of legal document do you need today?",
   },
 ];
 
-export default function NDAChatPanel({
-  data,
-  onChange,
+export default function DocumentChatPanel({
+  docId,
+  fieldValues,
+  onUpdate,
 }: {
-  data: NDAFormData;
-  onChange: (data: NDAFormData) => void;
+  docId: string | null;
+  fieldValues: Record<string, string>;
+  onUpdate: (docId: string | null, fieldValues: Record<string, string>, html: string) => void;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [input, setInput] = useState("");
@@ -34,9 +36,9 @@ export default function NDAChatPanel({
     setIsSending(true);
 
     try {
-      const result = await sendNDAChatMessage(nextMessages, data);
+      const result = await sendDocumentChatMessage(nextMessages, docId, fieldValues);
       setMessages([...nextMessages, { role: "assistant", content: result.reply }]);
-      onChange(result.ndaData);
+      onUpdate(result.docId, result.fieldValues, result.html);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import LoginScreen from "@/components/LoginScreen";
-import NdaCreatorPage from "@/components/NdaCreatorPage";
+import DocumentCreatorPage from "@/components/DocumentCreatorPage";
 import { clearSessionUser, loadSessionUser, saveSessionUser } from "@/lib/auth/session";
 import type { AuthUser } from "@/lib/auth/types";
 
@@ -36,5 +36,5 @@ export default function Home() {
     return <LoginScreen onAuthenticated={handleAuthenticated} />;
   }
 
-  return <NdaCreatorPage user={user} onSignOut={handleSignOut} />;
+  return <DocumentCreatorPage user={user} onSignOut={handleSignOut} />;
 }

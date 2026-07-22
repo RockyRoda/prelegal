@@ -2,22 +2,36 @@ import fs from "node:fs";
 import path from "node:path";
 import puppeteer from "puppeteer";
 import { NextResponse } from "next/server";
-import { renderNDADocumentHtml } from "@/lib/nda/renderDocument";
-import { NDAFormData } from "@/lib/nda/types";
 
 export const runtime = "nodejs";
 
+const BACKEND_INTERNAL_URL = process.env.BACKEND_INTERNAL_URL ?? "http://localhost:8000";
+
 export async function POST(request: Request) {
-  let data: NDAFormData;
+  let docId: string;
+  let fieldValues: Record<string, string>;
   try {
-    data = await request.json();
+    const body = await request.json();
+    docId = body.docId;
+    fieldValues = body.fieldValues ?? {};
+    if (!docId) throw new Error("Missing docId");
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const documentHtml = renderNDADocumentHtml(data);
+  const renderResponse = await fetch(`${BACKEND_INTERNAL_URL}/api/documents/${docId}/render`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fieldValues }),
+  });
+
+  if (!renderResponse.ok) {
+    return NextResponse.json({ error: "Failed to render document" }, { status: renderResponse.status });
+  }
+
+  const { html: documentHtml } = (await renderResponse.json()) as { html: string };
   const documentCss = fs.readFileSync(
-    path.join(process.cwd(), "src", "styles", "nda-document.css"),
+    path.join(process.cwd(), "src", "styles", "document.css"),
     "utf-8"
   );
 
@@ -49,7 +63,7 @@ export async function POST(request: Request) {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": 'attachment; filename="mutual-nda.pdf"',
+        "Content-Disposition": `attachment; filename="${docId}.pdf"`,
       },
     });
   } finally {

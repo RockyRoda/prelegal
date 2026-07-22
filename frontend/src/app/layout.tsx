@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import "@/styles/nda-document.css";
+import "@/styles/document.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mutual NDA Creator",
-  description: "Fill in a form to generate and download a Mutual Non-Disclosure Agreement.",
+  title: "Prelegal Document Creator",
+  description: "Chat with an assistant to generate and download a legal agreement.",
 };
 
 export default function RootLayout({

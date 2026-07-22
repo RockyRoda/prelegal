@@ -4,10 +4,11 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 
 WORKDIR /app
 
-COPY pyproject.toml uv.lock ./
+COPY backend/pyproject.toml backend/uv.lock ./
 RUN uv sync --locked --no-dev
 
-COPY app ./app
+COPY backend/app ./app
+COPY templates ./templates
 
 EXPOSE 8000
 
