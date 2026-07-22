@@ -51,7 +51,11 @@ Backend available at http://localhost:8000
 - Dark Navy `#032147` — main headings
 - Gray Text `#888888` — supporting text, labels
 
-## Implementation Status (as of 2026-07-22)
+## Ticket status
+
+Jira status doesn't always match the code: PL-2 through PL-4 are Done in Jira and in code. **PL-5** ("Add AI Chat but still just Mutual NDA") and **PL-6** ("Expand to all supported legal document types") are both fully implemented and merged to `main`, but Jira still shows both as "To Do" — they were never transitioned after merging. **PL-7** ("Support multiple users & final polish") is implemented, merged ([PR #8](https://github.com/RockyRoda/prelegal/pull/8)), and correctly marked Done. Before picking up "the next ticket," check `git log` against Jira status rather than trusting Jira alone.
+
+## Implementation Status (as of 2026-07-21)
 
 **Backend** (`backend/`, FastAPI + uv, Python >=3.12):
 - SQLite database wiped and recreated on every app startup (`app/db.py`) — three tables: `users` (with `password_hash`), `sessions` (opaque bearer tokens), `documents` (per-user saved field values, JSON-encoded). Data survives for the life of the running process, not across restarts (per PL-7's scope).
