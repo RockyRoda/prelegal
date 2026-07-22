@@ -1,10 +1,8 @@
 """Builds the NDA chat prompt and calls the LLM via OpenRouter/Cerebras.
 
-The free model this project uses (openai/gpt-oss-20b:free) does not reliably
-honor litellm's response_format constraint - it sometimes wraps the JSON in
-prose or markdown fences, or skips it entirely. The prompt spells the JSON-only
-contract out explicitly, and complete_nda_chat retries once with a firmer
-reminder if the first reply doesn't parse.
+complete_nda_chat retries on malformed replies or provider errors (network
+issues, rate limits) as a safety margin, though gpt-oss-120b via Cerebras has
+proven reliable at following the JSON contract in testing.
 """
 
 from collections.abc import Callable
@@ -13,7 +11,7 @@ from litellm import completion
 
 from .schemas import ChatMessage, NDAChatResponse, NDAFormData
 
-MODEL = "openrouter/openai/gpt-oss-20b:free"
+MODEL = "openrouter/openai/gpt-oss-120b"
 EXTRA_BODY = {"provider": {"order": ["cerebras"]}}
 MAX_ATTEMPTS = 3
 MAX_TOKENS = 1024
@@ -61,10 +59,10 @@ def _build_messages(messages: list[ChatMessage], nda_data: NDAFormData) -> list[
 
 
 def _extract_json_object(content: str | None) -> str:
-    """The free model doesn't always honor response_format strictly - it can
-    wrap the JSON in prose or markdown code fences, or return no content at
-    all. Pull out the outermost {...} block so we still get valid JSON to
-    validate; an empty result here fails JSON parsing and triggers a retry.
+    """A model can still occasionally wrap the JSON in prose or markdown code
+    fences, or return no content at all. Pull out the outermost {...} block so
+    we still get valid JSON to validate; an empty result here fails JSON
+    parsing and triggers a retry.
     """
     if not content:
         return ""
@@ -90,8 +88,7 @@ def _call_llm(llm_messages: list[dict]) -> str | None:
 
 def complete_nda_chat(messages: list[ChatMessage], nda_data: NDAFormData) -> NDAChatResponse:
     """Calls the LLM, retrying on both provider errors (rate limits, timeouts)
-    and malformed replies, since the free model is unreliable on both fronts.
-    """
+    and malformed replies."""
     llm_messages = _build_messages(messages, nda_data)
 
     for attempt in range(MAX_ATTEMPTS):

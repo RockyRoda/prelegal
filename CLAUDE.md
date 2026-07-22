@@ -14,7 +14,9 @@ when instructed to build a feature:
 
 ## Ai Design
 
-When writing code to make calls to LLMs, use your Crebas skill to use LiteLLM via OpoenRouter to the openai/gpt-oss-20b:free model with Cerebas as the inference provider. You should use structured Outputs so that you can interpret the results and populate fiedls in the legal document.
+When writing code to make calls to LLMs, use your Crebas skill to use LiteLLM via OpoenRouter to the openai/gpt-oss-120b model with Cerebas as the inference provider. You should use structured Outputs so that you can interpret the results and populate fiedls in the legal document.
+
+(The free openai/gpt-oss-20b:free model was tried first but proved unreliable at following the structured-output contract - see Implementation Status. gpt-oss-120b is not a free-tier model but is far more reliable and still runs on Cerebras.)
 
 There is an OPENROUTER_API_KEY in the .env file in the project root.
 
@@ -54,8 +56,8 @@ Backend available at http://localhost:8000
 **Backend** (`backend/`, FastAPI + uv, Python >=3.12):
 - SQLite database wiped and recreated on every app startup (`app/db.py`), single `users` table.
 - `/api/auth/signup` and `/api/auth/signin` (`app/auth.py`) — fake/passwordless login, matched by email only.
-- `/api/nda/chat` (`app/nda_chat.py` + `app/llm.py`) — stateless NDA chat endpoint. Each call sends the full message history and current NDA field values to `openai/gpt-oss-20b:free` via LiteLLM/OpenRouter/Cerebras (per the Cerebras skill) and returns the assistant's reply plus the complete updated field set.
-  - **Known limitation**: this free model does not reliably honor structured-output constraints. The endpoint retries up to 3 times on malformed JSON or provider errors before returning a `502`; even so, only roughly 1 in 5 real requests succeed on the first attempt in testing. Revisit the model/schema if this proves too unreliable in practice.
+- `/api/nda/chat` (`app/nda_chat.py` + `app/llm.py`) — stateless NDA chat endpoint. Each call sends the full message history and current NDA field values to `openai/gpt-oss-120b` via LiteLLM/OpenRouter, pinned to the Cerebras inference provider (per the Cerebras skill), and returns the assistant's reply plus the complete updated field set.
+  - The free `openai/gpt-oss-20b:free` model was tried first but only returned valid structured output on roughly 1 in 5 requests even with retries. `gpt-oss-120b` (not free, still Cerebras-hosted) was tested and passed 6/6 across single- and multi-turn conversations, including correctly splitting two people's details out of one combined message. The endpoint still retries up to 3 times on malformed JSON or provider errors before returning a `502`, as a safety margin rather than a load-bearing workaround.
   - `litellm` is pinned to `1.70.0` (not the latest) because newer releases bundle a Rust extension (`litellm-rust`) that failed to build on this machine (no MSVC/Rust toolchain installed). Re-evaluate the pin if that toolchain becomes available.
 - `/api/health` endpoint. CORS open to `http://localhost:3000`.
 - Tests in `backend/tests/test_auth.py` and `backend/tests/test_nda_chat.py`, run with pytest.
