@@ -21,8 +21,11 @@ def test_chat_without_auth_is_rejected(client: TestClient) -> None:
     assert response.status_code == 401
 
 
-def test_chat_without_doc_id_runs_selection(client: TestClient, auth_headers: dict[str, str]) -> None:
+def test_chat_without_doc_id_runs_selection_then_immediately_collects_fields(
+    client: TestClient, auth_headers: dict[str, str]
+) -> None:
     app.dependency_overrides[get_select_document] = lambda: _fake_select_document
+    app.dependency_overrides[get_collect_fields] = lambda: _fake_collect_fields
     try:
         response = client.post(
             "/api/documents/chat",
@@ -31,12 +34,17 @@ def test_chat_without_doc_id_runs_selection(client: TestClient, auth_headers: di
         )
     finally:
         app.dependency_overrides.pop(get_select_document, None)
+        app.dependency_overrides.pop(get_collect_fields, None)
 
     assert response.status_code == 200
     body = response.json()
     assert body["docId"] == "mnda"
     assert isinstance(body["documentId"], int)
-    assert "<article" in body["html"]
+    # The field-collection reply should already be part of this turn's
+    # response, not held back for a follow-up message from the user.
+    assert "Got it, noted the purpose." in body["reply"]
+    assert body["fieldValues"]["purpose"] == "Evaluating a partnership"
+    assert "Evaluating a partnership" in body["html"]
 
 
 def test_chat_without_doc_id_and_still_unselected_returns_no_html(

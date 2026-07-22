@@ -41,16 +41,28 @@ def chat(
     try:
         if payload.docId is None:
             reply, selected_doc_id = select_document_fn(payload.messages)
-            html = ""
-            document_id = payload.documentId
-            if selected_doc_id is not None:
-                html = render_document_html(DOCUMENTS[selected_doc_id], payload.fieldValues)
-                document_id = create_document(db, user_id, selected_doc_id, payload.fieldValues)
+            if selected_doc_id is None:
+                return DocumentChatResponse(
+                    reply=reply,
+                    docId=None,
+                    documentId=payload.documentId,
+                    fieldValues=payload.fieldValues,
+                    html="",
+                )
+
+            # Immediately follow selection with field collection, in the same
+            # turn, against the same conversation - otherwise the user has to
+            # send a throwaway message before the assistant starts asking
+            # about the document's fields.
+            spec = DOCUMENTS[selected_doc_id]
+            field_reply, field_values = collect_fields_fn(selected_doc_id, payload.messages, payload.fieldValues)
+            html = render_document_html(spec, field_values)
+            document_id = create_document(db, user_id, selected_doc_id, field_values)
             return DocumentChatResponse(
-                reply=reply,
+                reply=f"Great, let's put together your {spec.name}. {field_reply}",
                 docId=selected_doc_id,
                 documentId=document_id,
-                fieldValues=payload.fieldValues,
+                fieldValues=field_values,
                 html=html,
             )
 
